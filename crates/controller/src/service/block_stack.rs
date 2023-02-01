@@ -92,6 +92,16 @@ async fn get_block_stack(
     Ok(web::Json(bs))
 }
 
+#[get("/{address}/stacks/{id}/atomic")]
+async fn get_script_bytecode(
+    context: Data<ApiContext>,
+    path: web::Path<(String, i32)>,
+) -> Result<impl Responder, Error> {
+    let (_, id) = path.into_inner();
+    let bs = block_stack::get_script_bytecode(&context.app_db, id).await;
+    Ok(web::Json(bs))
+}
+
 #[patch("/{address}/stacks/{id}")]
 async fn update_block_stack(
     context: Data<ApiContext>,
@@ -121,4 +131,5 @@ pub fn routers(scope: actix_web::Scope) -> actix_web::Scope {
         .service(update_block_stack)
         .service(delete_block_stack)
         .service(get_block_stack)
+        .service(get_script_bytecode)
 }

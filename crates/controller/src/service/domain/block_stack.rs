@@ -63,6 +63,25 @@ pub(crate) async fn get_block_stack(app_db: &PostgresPool, id: i32) -> Option<Bl
     .ok()
 }
 
+pub(crate) async fn get_script_bytecode(app_db: &PostgresPool, id: i32) -> Option<String> {
+    let maybe_block_stack: Option<BlockStack> = query_as(
+        "
+                SELECT *
+                FROM block_stack
+                WHERE id = $1
+            ",
+    )
+    .bind(id)
+    .fetch_one(app_db)
+    .await
+    .ok();
+
+    if let Some(block_stack) = maybe_block_stack {
+        Some(String::from_utf8_lossy(block_stack.bytecode.as_slice()).to_string())
+    } else {
+        None
+    }
+}
 /// Auth-checked address at upper layer
 pub(crate) async fn create_my_block_stack(
     app_db: &PostgresPool,
@@ -189,6 +208,13 @@ pub(crate) async fn update_my_block_stack(
     id: i32,
     new_block_stack: NewBlockStack,
 ) -> Result<PgQueryResult, Error> {
+    let db = app_db.clone();
+    let stack = new_block_stack.stack.clone();
+    let account = address.clone();
+
+    actix_rt::task::spawn_blocking(move || {
+        futures::executor::block_on(create_bytecode(db, stack, account)).unwrap_or_default();
+    });
     let target_block_stack: BlockStack = query_as(
         "
                 SELECT *
