@@ -169,7 +169,7 @@ impl MoveScript {
                 let deps_name = package_parser(&dep.git, &dep.rev, &dep.subdir).await;
                 match deps_name {
                     Ok(deps_name) => format_args!(
-                        "{} = {{ git = '{}', rev = '{}', subdir = '{}' }}",
+                        "{} = {{ git = '{}', rev = '{}', subdir = '{}' }}\n",
                         deps_name, dep.git, dep.rev, dep.subdir
                     )
                     .to_string(),
