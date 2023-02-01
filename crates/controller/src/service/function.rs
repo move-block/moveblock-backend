@@ -65,10 +65,17 @@ async fn function_detail(
     params: web::Path<(String, String, String)>,
 ) -> Result<impl Responder, Error> {
     let (address, module_name, function_name) = params.into_inner();
-    let function_detail =
-        function::get_function_detail(&context.app_db, &address, &module_name, &function_name)
-            .await;
-    Ok(web::Json(function_detail))
+    println!("{} {} {}", address, module_name, function_name);
+    let function_with_detail = function::get_function_with_detail(
+        &context.function_index_db,
+        &context.app_db,
+        &address,
+        &module_name,
+        &function_name,
+    )
+    .await;
+
+    Ok(web::Json(function_with_detail))
 }
 
 #[get("/entry-functions")]

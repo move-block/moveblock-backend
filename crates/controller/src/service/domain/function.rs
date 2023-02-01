@@ -57,6 +57,63 @@ pub(crate) async fn get_function_detail(
     .ok()
 }
 
+pub async fn get_function_with_detail(
+    function_db: &PostgresPool,
+    app_db: &PostgresPool,
+    address: &str,
+    module_name: &str,
+    function_name: &str,
+) -> Option<ModuleFunctionWithDetail> {
+    let maybe_function: Option<ModuleFunction> = query_as(
+        "
+                SELECT DISTINCT ON (module_address, module_name, name) *
+                FROM module_function
+                WHERE
+                    module_address = $1
+                    AND
+                    module_name = $2
+                    AND
+                    name = $3
+                ORDER BY module_address, module_name, name, id DESC
+            ",
+    )
+    .bind(address)
+    .bind(module_name)
+    .bind(function_name)
+    .fetch_one(function_db)
+    .await
+    .ok();
+
+    println!("{:?}", maybe_function);
+
+    match maybe_function {
+        Some(function) => {
+            let function_detail: Option<ModuleFunctionDetail> = query_as(
+                "
+                        SELECT DISTINCT ON (address, module_name, function_name) *
+                        FROM module_function_detail
+                        WHERE
+                            address = $1
+                            AND
+                            module_name = $2
+                            AND
+                            function_name = $3
+                        ORDER BY address, module_name, function_name, id DESC
+                    ",
+            )
+            .bind(&function.module_address)
+            .bind(&function.module_name)
+            .bind(&function.name)
+            .fetch_one(app_db)
+            .await
+            .ok();
+
+            Some(ModuleFunctionWithDetail::compose(function, function_detail))
+        }
+        None => None,
+    }
+}
+
 pub(crate) async fn get_functions_by_keyword_with_account_detail(
     function_indexer_db: &PostgresPool,
     app_db: &PostgresPool,
