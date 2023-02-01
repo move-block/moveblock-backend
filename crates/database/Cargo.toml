@@ -1,0 +1,21 @@
+[package]
+name = "database"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies.serde]
+version = "1.0.147"
+features = ["derive"]
+
+[dependencies.chrono]
+version = "0.4.23"
+features = ["serde"]
+
+[dependencies.sqlx]
+version = "0.6.2"
+features = ["runtime-actix-native-tls", "postgres", "any", "macros", "migrate", "chrono", "time", "json"]
+
+[dependencies]
+thiserror = "1.0.38"
+serde_json = "1.0.91"
+async-trait = "0.1.61"

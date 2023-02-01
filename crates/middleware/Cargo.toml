@@ -1,0 +1,23 @@
+[package]
+name = "middleware"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies.serde]
+version = "1.0.152"
+features = ["derive"]
+
+[dependencies.aptos-crypto]
+git = "https://github.com/aptos-labs/aptos-core"
+branch = "main"
+
+[dependencies]
+actix-web = "4.2.1"
+actix-utils = "3.0.1"
+actix-service = "2.0.2"
+actix-router = "0.5.1"
+futures-util = "0.3.25"
+thiserror = "1.0.38"
+serde_json = "1.0.91"

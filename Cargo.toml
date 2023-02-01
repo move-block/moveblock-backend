@@ -1,8 +1,7 @@
-[package]
-name = "moveblock"
-version = "0.1.0"
-edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
+[workspace]
+members = [
+    "crates/controller",
+    "crates/database",
+    "crates/middleware",
+    "crates/move-generator"
+]
