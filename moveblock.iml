@@ -9,6 +9,11 @@
       <sourceFolder url="file://$MODULE_DIR$/crates/move-generator/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/temp/ab316c9c-521d-4b41-9f33-42c4481f9ae0/build" />
+      <excludeFolder url="file://$MODULE_DIR$/temp/7f4300e1-ca8d-4c1a-b12c-d5de1e48103a/build" />
+      <excludeFolder url="file://$MODULE_DIR$/temp/388c523e-1dfe-44a6-a90b-27e90b3f7d73/build" />
+      <excludeFolder url="file://$MODULE_DIR$/temp/069f7730-3639-4e7e-af4c-e8dca61ab4bb/build" />
+      <excludeFolder url="file://$MODULE_DIR$/temp/6882989b-5c62-4564-8861-0f5a0670b8e0/build" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

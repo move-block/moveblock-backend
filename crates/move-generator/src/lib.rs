@@ -143,7 +143,7 @@ impl MoveScript {
                 msg: String::from("directory name not set"),
             });
         }
-        tokio::fs::create_dir(self.dir.as_path())
+        tokio::fs::create_dir_all(self.dir.as_path())
             .await
             .map_err(|e| Error::Generate { msg: e.to_string() })?;
 
