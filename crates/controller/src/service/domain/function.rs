@@ -84,8 +84,6 @@ pub async fn get_function_with_detail(
     .await
     .ok();
 
-    println!("{:?}", maybe_function);
-
     match maybe_function {
         Some(function) => {
             let function_detail: Option<ModuleFunctionDetail> = query_as(
