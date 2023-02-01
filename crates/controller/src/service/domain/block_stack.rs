@@ -157,10 +157,12 @@ async fn create_bytecode(
         });
     }
 
-    let compile_res = MoveScript::new()
+    let mut move_script = MoveScript::new()
         .init()
         .add_dependencies(dependencies)
-        .add_functions(functions)
+        .add_functions(functions);
+
+    let compile_res = move_script
         .generate_script()
         .await
         .map_err(|e| Error::AnyError(anyhow::Error::new(e)))?;
@@ -199,6 +201,7 @@ async fn create_bytecode(
             );
         }
     }
+    move_script.destroy_self().await.unwrap_or_default();
     Ok(())
 }
 

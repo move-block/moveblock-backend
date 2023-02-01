@@ -6,6 +6,7 @@ use futures::future::join_all;
 use serde::{Deserialize, Serialize};
 use std::path::PathBuf;
 use std::process::Output;
+use tokio::fs;
 use tokio::io::AsyncWriteExt;
 use uuid::Uuid;
 
@@ -243,9 +244,8 @@ impl MoveScript {
         self.compile()
     }
 
-    pub async fn destroy_self(mut self) -> Result<(), Error> {
-        // TODO: delete every files related to self
-        unimplemented!()
+    pub async fn destroy_self(self) -> Result<(), Error> {
+        Ok(fs::remove_dir_all(self.dir).await?)
     }
 
     pub fn compile(&self) -> Result<CompileResult, Error> {
@@ -276,7 +276,7 @@ mod script {
     #[tokio::test]
     async fn test_script_generator() {
         dotenv().ok();
-        let script = MoveScript::new()
+        let mut script = MoveScript::new()
             .init()
             .add_dependency(Dependency::new(
                 "https://github.com/aptos-labs/aptos-core",
@@ -300,9 +300,9 @@ mod script {
                         .to_string(),
                     "100000".to_string(),
                 ],
-            ))
-            .generate_script()
-            .await
-            .unwrap();
+            ));
+
+        script.generate_script().await.unwrap();
+        script.destroy_self().await.unwrap();
     }
 }
