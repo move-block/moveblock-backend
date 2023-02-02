@@ -19,7 +19,7 @@ pub struct BlockStackQueryParams {
     pub limit: Option<i64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Block {
     pub r#type: String,
     pub function: String,

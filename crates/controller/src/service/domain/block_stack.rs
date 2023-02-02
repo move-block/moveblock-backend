@@ -274,7 +274,7 @@ pub(crate) async fn update_my_block_stack(
     .await
     .map_err(|e| Error::DbError(e.into()));
 
-    if res.is_ok() {
+    if target_block_stack.stack != new_block_stack.stack && res.is_ok() {
         actix_rt::task::spawn_blocking(move || {
             futures::executor::block_on(create_bytecode(db, stack, account)).unwrap_or_default();
         });

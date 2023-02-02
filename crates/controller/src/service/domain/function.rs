@@ -39,10 +39,10 @@ pub(crate) async fn get_entry_functions_count(function_indexer_db: &PostgresPool
                 WHERE is_entry = TRUE
             ",
     )
-        .fetch_one(function_indexer_db)
-        .await
-        .ok()
-        .unwrap_or_default()
+    .fetch_one(function_indexer_db)
+    .await
+    .ok()
+    .unwrap_or_default()
 }
 
 pub(crate) async fn get_function_count_filtered_by_keyword(
@@ -105,12 +105,12 @@ pub(crate) async fn get_entry_function_count_filtered_by_keyword(
                 ) count
             ",
     )
-        .bind(keyword)
-        .bind(address_by_alias.unwrap_or_default())
-        .fetch_one(function_indexer_db)
-        .await
-        .ok()
-        .unwrap_or_default()
+    .bind(keyword)
+    .bind(address_by_alias.unwrap_or_default())
+    .fetch_one(function_indexer_db)
+    .await
+    .ok()
+    .unwrap_or_default()
 }
 
 pub(crate) async fn get_function_detail(

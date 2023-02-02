@@ -107,7 +107,12 @@ async fn entry_functions_by_params(
             .await
             .unwrap_or_default();
 
-            let count = function::get_entry_function_count_filtered_by_keyword(&context.function_index_db, &context.app_db, keyword).await;
+            let count = function::get_entry_function_count_filtered_by_keyword(
+                &context.function_index_db,
+                &context.app_db,
+                keyword,
+            )
+            .await;
 
             (count.count, functions, Some(offset), Some(limit))
         }
