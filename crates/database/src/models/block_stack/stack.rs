@@ -10,7 +10,7 @@ pub struct BlockStack {
     pub name: String,
     pub stack: JsonValue,
     pub last_edit_datetime: NaiveDateTime,
-    pub bytecode: Vec<u8>,
+    pub bytecode: Option<Vec<u8>>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromRow)]

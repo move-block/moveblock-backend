@@ -77,7 +77,7 @@ pub(crate) async fn get_script_bytecode(app_db: &PostgresPool, id: i32) -> Optio
     .ok();
 
     if let Some(block_stack) = maybe_block_stack {
-        Some(String::from_utf8_lossy(block_stack.bytecode.as_slice()).to_string())
+        Some(String::from_utf8_lossy(block_stack.bytecode.unwrap_or_default().as_slice()).to_string())
     } else {
         None
     }
@@ -206,7 +206,7 @@ async fn create_bytecode(
             );
         }
     }
-    move_script.destroy_self().await.unwrap_or_default();
+    // move_script.destroy_self().await.unwrap_or_default();
     Ok(())
 }
 
