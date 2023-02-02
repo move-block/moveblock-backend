@@ -414,7 +414,7 @@ pub(crate) async fn create_or_update_function_detail(
 
     if target_function_generic_param_names.len() != generic_param_names.len() {
         return Err(Error::InvalidParams {
-            msg: "param_names length".to_string(),
+            msg: "generic_param_names length".to_string(),
         });
     }
 
