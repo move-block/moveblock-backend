@@ -10,7 +10,11 @@ use tokio::fs;
 use tokio::io::AsyncWriteExt;
 use uuid::Uuid;
 
-pub async fn package_parser(github_url: &str, rev: &str, subdir: &str) -> Result<String, Error> {
+pub async fn package_name_parser(
+    github_url: &str,
+    rev: &str,
+    subdir: &str,
+) -> Result<String, Error> {
     let github_url = github_url
         .strip_prefix("https://github.com")
         .map(|g| g.strip_suffix(".git").unwrap_or(g))
@@ -167,7 +171,7 @@ impl MoveScript {
             .dependencies
             .iter()
             .map(|dep| async {
-                let deps_name = package_parser(&dep.git, &dep.rev, &dep.subdir).await;
+                let deps_name = package_name_parser(&dep.git, &dep.rev, &dep.subdir).await;
                 match deps_name {
                     Ok(deps_name) => format_args!(
                         "{} = {{ git = '{}', rev = '{}', subdir = '{}' }}\n",
