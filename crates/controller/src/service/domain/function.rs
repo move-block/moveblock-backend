@@ -31,6 +31,88 @@ pub(crate) async fn get_functions_count(function_indexer_db: &PostgresPool) -> C
     .unwrap_or_default()
 }
 
+pub(crate) async fn get_entry_functions_count(function_indexer_db: &PostgresPool) -> Count {
+    query_as(
+        "
+                SELECT COUNT(id) as count
+                FROM module_function
+                WHERE is_entry = TRUE
+            ",
+    )
+        .fetch_one(function_indexer_db)
+        .await
+        .ok()
+        .unwrap_or_default()
+}
+
+pub(crate) async fn get_function_count_filtered_by_keyword(
+    function_indexer_db: &PostgresPool,
+    app_db: &PostgresPool,
+    keyword: &str,
+) -> Count {
+    let address_by_alias = account::get_address_by_alias(app_db, keyword).await;
+    query_as(
+        "
+                SELECT COUNT (1)
+                FROM (
+                    SELECT DISTINCT ON (module_address, module_name, name) *
+                        FROM module_function
+                        WHERE
+                            module_address = $1
+                            OR
+                            module_address = $2
+                            OR
+                            module_name = $1
+                            OR
+                            name = $1
+                        ORDER BY module_address, module_name, name, id DESC
+                ) count
+            ",
+    )
+    .bind(keyword)
+    .bind(address_by_alias.unwrap_or_default())
+    .fetch_one(function_indexer_db)
+    .await
+    .ok()
+    .unwrap_or_default()
+}
+
+pub(crate) async fn get_entry_function_count_filtered_by_keyword(
+    function_indexer_db: &PostgresPool,
+    app_db: &PostgresPool,
+    keyword: &str,
+) -> Count {
+    let address_by_alias = account::get_address_by_alias(app_db, keyword).await;
+    query_as(
+        "
+                SELECT COUNT (1)
+                FROM (
+                    SELECT DISTINCT ON (module_address, module_name, name) *
+                        FROM module_function
+                        WHERE
+                            (
+                                module_address = $1
+                                OR
+                                module_address = $2
+                                OR
+                                module_name = $1
+                                OR
+                                name = $1
+                            )
+                            AND
+                            is_entry = TRUE
+                        ORDER BY module_address, module_name, name, id DESC
+                ) count
+            ",
+    )
+        .bind(keyword)
+        .bind(address_by_alias.unwrap_or_default())
+        .fetch_one(function_indexer_db)
+        .await
+        .ok()
+        .unwrap_or_default()
+}
+
 pub(crate) async fn get_function_detail(
     app_db: &PostgresPool,
     address: &str,

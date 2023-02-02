@@ -34,11 +34,18 @@ async fn functions_by_params(
                 &context.app_db,
                 keyword,
                 offset,
-                limit
+                limit,
             )
             .await
             .unwrap_or_default();
-            (functions.len() as i64, functions, None, None)
+
+            let count = function::get_function_count_filtered_by_keyword(
+                &context.function_index_db,
+                &context.app_db,
+                keyword,
+            )
+            .await;
+            (count.count, functions, Some(offset), Some(limit))
         }
         None => {
             let functions = function::get_paginated_functions_with_account_detail(
@@ -95,12 +102,14 @@ async fn entry_functions_by_params(
                 &context.app_db,
                 keyword,
                 offset,
-                limit
+                limit,
             )
             .await
             .unwrap_or_default();
 
-            (functions.len() as i64, functions, None, None)
+            let count = function::get_entry_function_count_filtered_by_keyword(&context.function_index_db, &context.app_db, keyword).await;
+
+            (count.count, functions, Some(offset), Some(limit))
         }
         None => {
             let functions = function::get_paginated_functions_by_keyword_with_function_detail(
@@ -112,7 +121,7 @@ async fn entry_functions_by_params(
             .await
             .unwrap_or_default();
 
-            let count = function::get_functions_count(&context.function_index_db).await;
+            let count = function::get_entry_functions_count(&context.function_index_db).await;
 
             (count.count, functions, Some(offset), Some(limit))
         }
