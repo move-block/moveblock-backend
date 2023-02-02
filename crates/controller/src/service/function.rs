@@ -24,21 +24,23 @@ async fn functions_by_params(
     context: Data<ApiContext>,
     params: Query<FunctionQueryParams>,
 ) -> Result<impl Responder, Error> {
+    let offset = params.offset.unwrap_or(0);
+    let limit = params.limit.unwrap_or(10);
+
     let (total_len, functions, offset, limit) = match &params.keyword {
         Some(keyword) => {
             let functions = function::get_functions_by_keyword_with_account_detail(
                 &context.function_index_db,
                 &context.app_db,
                 keyword,
+                offset,
+                limit
             )
             .await
             .unwrap_or_default();
-
             (functions.len() as i64, functions, None, None)
         }
         None => {
-            let offset = params.offset.unwrap_or(0);
-            let limit = params.limit.unwrap_or(10);
             let functions = function::get_paginated_functions_with_account_detail(
                 &context.function_index_db,
                 &context.app_db,
@@ -83,12 +85,17 @@ async fn entry_functions_by_params(
     context: Data<ApiContext>,
     params: Query<FunctionQueryParams>,
 ) -> Result<impl Responder, Error> {
+    let offset = params.offset.unwrap_or(0);
+    let limit = params.limit.unwrap_or(10);
+
     let (total_len, functions, offset, limit) = match &params.keyword {
         Some(keyword) => {
             let functions = function::get_functions_by_keyword_with_function_detail(
                 &context.function_index_db,
                 &context.app_db,
                 keyword,
+                offset,
+                limit
             )
             .await
             .unwrap_or_default();
@@ -96,8 +103,6 @@ async fn entry_functions_by_params(
             (functions.len() as i64, functions, None, None)
         }
         None => {
-            let offset = params.offset.unwrap_or(0);
-            let limit = params.limit.unwrap_or(10);
             let functions = function::get_paginated_functions_by_keyword_with_function_detail(
                 &context.function_index_db,
                 &context.app_db,

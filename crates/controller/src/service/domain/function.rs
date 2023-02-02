@@ -117,6 +117,8 @@ pub(crate) async fn get_functions_by_keyword_with_account_detail(
     function_indexer_db: &PostgresPool,
     app_db: &PostgresPool,
     keyword: &str,
+    offset: i64,
+    limit: i64,
 ) -> Option<Vec<ModuleFunctionWithAccountDetail>> {
     let address_by_alias = account::get_address_by_alias(app_db, keyword).await;
 
@@ -133,10 +135,14 @@ pub(crate) async fn get_functions_by_keyword_with_account_detail(
                 OR
                 name = $1
             ORDER BY module_address, module_name, name, id DESC
+            OFFSET $3
+            LIMIT $4
            ",
     )
     .bind(keyword)
     .bind(address_by_alias.unwrap_or_default())
+    .bind(offset)
+    .bind(limit)
     .fetch_all(function_indexer_db)
     .await
     .ok()
@@ -200,6 +206,8 @@ pub(crate) async fn get_functions_by_keyword_with_function_detail(
     function_indexer_db: &PostgresPool,
     app_db: &PostgresPool,
     keyword: &str,
+    offset: i64,
+    limit: i64,
 ) -> Result<Vec<ModuleFunctionWithOwnAndAccountDetail>, Error> {
     let address_by_alias = account::get_address_by_alias(app_db, keyword).await;
 
@@ -220,10 +228,14 @@ pub(crate) async fn get_functions_by_keyword_with_function_detail(
                 AND
                 is_entry = TRUE
             ORDER BY module_address, module_name, name, id DESC
+            OFFSET $3
+            LIMIT $4
            ",
     )
     .bind(keyword)
     .bind(address_by_alias.unwrap_or_default())
+    .bind(offset)
+    .bind(limit)
     .fetch_all(function_indexer_db)
     .await
     .ok()

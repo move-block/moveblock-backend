@@ -350,9 +350,15 @@ pub(crate) async fn execute_script(
         return Err(Error::UnAuthorized {});
     }
 
-    let private_key = Ed25519PrivateKey::from_encoded_string("0xefa26dc276fb632899c821fb613bbf69af13f333114894cb46324c4db52ee36a").unwrap();
+    let private_key = Ed25519PrivateKey::from_encoded_string(
+        "0xefa26dc276fb632899c821fb613bbf69af13f333114894cb46324c4db52ee36a",
+    )
+    .unwrap();
     let public_key = private_key.public_key();
-    let account = AccountAddress::from_str("0x8010b2a97a2a458e6f58c796c647c3c08fef39057502cbc508bbf2534929b8a3").unwrap();
+    let account = AccountAddress::from_str(
+        "0x8010b2a97a2a458e6f58c796c647c3c08fef39057502cbc508bbf2534929b8a3",
+    )
+    .unwrap();
     let account_info: Account = reqwest::get(format!(
         "https://fullnode.devnet.aptoslabs.com/v1/accounts/{}",
         account
@@ -363,7 +369,8 @@ pub(crate) async fn execute_script(
     .await
     .unwrap();
 
-    let decoded_byte_code = hex::decode(target_block_stack.bytecode.unwrap_or_default()).expect("wrong bytecode");
+    let decoded_byte_code =
+        hex::decode(target_block_stack.bytecode.unwrap_or_default()).expect("wrong bytecode");
 
     let tx = TransactionBuilder::new(
         TransactionPayload::Script(Script::new(decoded_byte_code, vec![], vec![])),
