@@ -87,15 +87,12 @@ pub(crate) async fn create_my_block_stack(
     app_db: &PostgresPool,
     address: String,
     new_block_stack: NewBlockStack,
-) -> Result<PgQueryResult, Error> {
+) -> Result<(), Error> {
     let db = app_db.clone();
     let stack = new_block_stack.stack.clone();
     let account = address.clone();
 
-    actix_rt::task::spawn_blocking(move || {
-        futures::executor::block_on(create_bytecode(db, stack, account)).unwrap_or_default();
-    });
-    query(
+    let res = query(
         "
                 INSERT INTO block_stack
                 (address, name, stack) VALUES ($1, $2, $3)
@@ -106,7 +103,15 @@ pub(crate) async fn create_my_block_stack(
     .bind(&new_block_stack.stack)
     .execute(app_db)
     .await
-    .map_err(|e| Error::DbError(e.into()))
+    .map_err(|e| Error::DbError(e.into()));
+
+    if res.is_ok() {
+        actix_rt::task::spawn_blocking(move || {
+            futures::executor::block_on(create_bytecode(db, stack, account)).unwrap_or_default();
+        });
+    }
+
+    Ok(())
 }
 
 async fn create_bytecode(
@@ -210,14 +215,11 @@ pub(crate) async fn update_my_block_stack(
     address: String,
     id: i32,
     new_block_stack: NewBlockStack,
-) -> Result<PgQueryResult, Error> {
+) -> Result<(), Error> {
     let db = app_db.clone();
     let stack = new_block_stack.stack.clone();
     let account = address.clone();
 
-    actix_rt::task::spawn_blocking(move || {
-        futures::executor::block_on(create_bytecode(db, stack, account)).unwrap_or_default();
-    });
     let target_block_stack: BlockStack = query_as(
         "
                 SELECT *
@@ -240,7 +242,7 @@ pub(crate) async fn update_my_block_stack(
         return Err(Error::UnAuthorized {});
     }
 
-    query(
+    let res = query(
         "
                 UPDATE block_stack
                     SET
@@ -255,7 +257,15 @@ pub(crate) async fn update_my_block_stack(
     .bind(id)
     .execute(app_db)
     .await
-    .map_err(|e| Error::DbError(e.into()))
+    .map_err(|e| Error::DbError(e.into()));
+
+    if res.is_ok() {
+        actix_rt::task::spawn_blocking(move || {
+            futures::executor::block_on(create_bytecode(db, stack, account)).unwrap_or_default();
+        });
+    }
+
+    Ok(())
 }
 
 pub(crate) async fn delete_my_block_stack(
