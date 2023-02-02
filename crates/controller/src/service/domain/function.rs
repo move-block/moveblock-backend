@@ -14,6 +14,7 @@ use database::models::module_hub::detail::function::{
 };
 
 use futures::future::join_all;
+use serde::{Deserialize, Serialize};
 use sqlx::postgres::PgQueryResult;
 use sqlx::{query, query_as};
 
@@ -360,6 +361,11 @@ pub(crate) async fn create_or_update_function_detail(
     app_db: &PostgresPool,
     function_detail: &NewModuleFunctionDetail,
 ) -> Result<PgQueryResult, Error> {
+    #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
+    struct GenericTypeParams {
+        constraints: Vec<String>
+    }
+
     let target_function: ModuleFunction = query_as(
         "
             SELECT DISTINCT ON (module_address, module_name, name) *
@@ -390,7 +396,7 @@ pub(crate) async fn create_or_update_function_detail(
         serde_json::from_value(function_detail.param_names.clone().unwrap_or_default())
             .unwrap_or_default();
 
-    let target_function_generic_param_names: Vec<String> = serde_json::from_value(
+    let target_function_generic_param_names: Vec<GenericTypeParams> = serde_json::from_value(
         target_function
             .generic_type_params
             .clone()
