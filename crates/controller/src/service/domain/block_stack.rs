@@ -220,7 +220,7 @@ async fn create_bytecode(
         }
     }
 
-    //
+    // Document this line out on debug
     move_script.destroy_self().await.unwrap_or_default();
     Ok(())
 }
