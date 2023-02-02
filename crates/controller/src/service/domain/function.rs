@@ -363,7 +363,7 @@ pub(crate) async fn create_or_update_function_detail(
 ) -> Result<PgQueryResult, Error> {
     #[derive(Debug, Eq, PartialEq, Serialize, Deserialize)]
     struct GenericTypeParams {
-        constraints: Vec<String>
+        constraints: Vec<String>,
     }
 
     let target_function: ModuleFunction = query_as(

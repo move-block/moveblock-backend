@@ -4,12 +4,13 @@ pub mod function;
 pub mod module;
 
 use crate::service::Error;
+use aptos_sdk::crypto::ed25519::{Ed25519PublicKey, Ed25519Signature};
+use aptos_sdk::crypto::{Signature, ValidCryptoMaterialStringExt};
 use std::ops::Add;
 use std::str::FromStr;
 
-use aptos_crypto::ed25519::{Ed25519PublicKey, Ed25519Signature};
-use aptos_crypto::{Signature, ValidCryptoMaterialStringExt};
-use aptos_types::account_address::{create_resource_address, AccountAddress};
+use aptos_sdk::types::account_address::{create_resource_address, AccountAddress};
+
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;

@@ -124,6 +124,17 @@ async fn delete_block_stack(
     Ok(HttpResponse::Ok())
 }
 
+#[get("/{address}/execute/stacks/{id}")]
+async fn execute_script(
+    context: Data<ApiContext>,
+    path: web::Path<(String, i32)>,
+) -> Result<impl Responder, Error> {
+    let (address, id) = path.into_inner();
+    let res = block_stack::execute_script(&context.app_db, address, id).await?;
+
+    Ok(web::Json(res))
+}
+
 pub fn routers(scope: actix_web::Scope) -> actix_web::Scope {
     scope
         .service(block_stacks)
@@ -132,4 +143,5 @@ pub fn routers(scope: actix_web::Scope) -> actix_web::Scope {
         .service(delete_block_stack)
         .service(get_block_stack)
         .service(get_script_bytecode)
+        .service(execute_script)
 }
