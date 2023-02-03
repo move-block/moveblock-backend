@@ -95,12 +95,34 @@ pub(crate) async fn get_script_bytecode(app_db: &PostgresPool, id: i32) -> Optio
         None
     }
 }
+
+pub(crate) async fn get_last_inserted_stack_id_by_address(
+    app_db: &PostgresPool,
+    address: &str,
+) -> i32 {
+    let last_stack: Option<BlockStack> = query_as(
+        "
+                SELECT *
+                FROM block_stack
+                WHERE address = $1
+                ORDER BY id DESC
+                limit 1
+            ",
+    )
+    .bind(address)
+    .fetch_one(app_db)
+    .await
+    .ok();
+
+    last_stack.unwrap_or_default().id
+}
+
 /// Auth-checked address at upper layer
 pub(crate) async fn create_my_block_stack(
     app_db: &PostgresPool,
     address: String,
     new_block_stack: NewBlockStack,
-) -> Result<(), Error> {
+) -> Result<i32, Error> {
     let db = app_db.clone();
     let stack = new_block_stack.stack.clone();
     let account = address.clone();
@@ -124,7 +146,7 @@ pub(crate) async fn create_my_block_stack(
         });
     }
 
-    Ok(())
+    Ok(get_last_inserted_stack_id_by_address(app_db, &address).await)
 }
 
 async fn create_bytecode(

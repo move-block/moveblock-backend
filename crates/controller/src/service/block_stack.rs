@@ -76,10 +76,10 @@ async fn create_block_stack(
     body: web::Json<BlockStackBody>,
 ) -> Result<impl Responder, Error> {
     let address = address.into_inner();
-    block_stack::create_my_block_stack(&context.app_db, address, body.into_inner().try_into()?)
+    let latest_stack_id = block_stack::create_my_block_stack(&context.app_db, address, body.into_inner().try_into()?)
         .await?;
 
-    Ok(HttpResponse::Ok())
+    Ok(web::Json(latest_stack_id))
 }
 
 #[get("/{address}/stacks/{id}")]

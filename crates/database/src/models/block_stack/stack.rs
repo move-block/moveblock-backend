@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::types::JsonValue;
 use sqlx::FromRow;
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, FromRow)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, FromRow)]
 pub struct BlockStack {
     pub id: i32,
     pub address: String,
