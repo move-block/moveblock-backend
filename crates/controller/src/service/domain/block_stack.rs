@@ -243,7 +243,7 @@ async fn create_bytecode(
     }
 
     // Comment this line out on debug
-    // move_script.destroy_self().await.unwrap_or_default();
+    move_script.destroy_self().await.unwrap_or_default();
     Ok(())
 }
 
